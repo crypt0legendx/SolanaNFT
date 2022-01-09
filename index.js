@@ -37,5 +37,31 @@ var splToken = require('@solana/spl-token');
         toWallet.publicKey,
     );
 
+    //minting 1 new token to the "fromTokenAccount" account we just returned/created
+    await mint.mintTo(
+        fromTokenAccount.address, //who it goes to.
+        fromWallet.publicKey, //minting authority
+        [], //multising
+        1000000000, // how many
+    );
+
+    await mint.setAuthority(
+        mint.publicKey,
+        null,
+        "MintTokens",
+        fromWallet.publicKey, []
+    )
+
+    //Add token transfer instructions to transaction
+    var transaction = new web3.Transaction().add(
+        splToken.Token.createTransferInstruction(
+            splToken.TOKEN_PROGRAM_ID,
+            fromTokenAccount.address,
+            toTokenAccount.address,
+            fromWallet.publicKey, [],
+            1
+        )
+    )
+
 
 })
